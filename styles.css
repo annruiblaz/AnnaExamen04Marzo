@@ -15,6 +15,7 @@
             height: 375px;
             max-width: 500px;
             border-radius: 20px;
+            object-fit: cover;
         }
     }
 
@@ -28,13 +29,25 @@
         border-radius: 20px;
     }
 
-    #photo-btn,
-    .webcam-btn,
-    .class-btn {
-        max-width: 150px;
+    .btn {
         height: 40px;
+        max-width: 150px;
         max-height: fit-content;
+        border-radius: 20px;
+        background-color: #e5e5e582;
+        box-shadow: inset 10px 10px 15px #FFF;
+/*         filter: drop-shadow(5px 10px 5px #e3e2e2);
+ */        border: 1px solid #BBBBBB45;
+        transition: all .5s ease-in-out;
 
+        &:hover {
+
+
+            background-color: #FFF;
+            box-shadow: inset 5px 5px 10px #BBB;
+            filter: drop-shadow(5px 10px 5px #FFF);
+
+        }
     }
 
     .options-container {
@@ -56,11 +69,15 @@
         gap: 20px;
     }
 
-    .files-input {
+    .input-class {
         max-width: 300px;
     }
 
-    .upload-btn {
+    #files-input {
+        max-width: 300px;
+    }
+
+    #upload-btn {
         max-width: 150px;
         height: 40px;
     }

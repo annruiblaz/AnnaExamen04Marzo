@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Examen 4 de Marzo</title>
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
     <div class="container">
-<!--         <h4>
+        <!--         <h4>
             Introduce una clase para las fotos. Puedes subir fotos desde tu dispositivo o bien capturarlas desde la webcam.
             Una vez subidas o tomadas, las verás más abajo y se almacenarán en el servidor.
         </h4> -->
@@ -16,29 +18,30 @@
         <div class="video-container">
             <video id="video" autoplay></video>
             <div class="options-container">
-                <button class="webcam-btn" onclick="getAccessWebcam()">Webcam</button>
-    
-                <button id="photo-btn">Capturar Imágenes</button>
-    
-                <label for="interval">Selecciona el intervalo de segundos entre la toma de imagenes</label>
-                <input id="interval" type="number" value="1" />
+
+
+                <label for="interval">Selecciona el intervalo de ms entre la toma de imagenes</label>
+                <input id="interval" type="number" value="1000" step="500" min="500"/>
 
                 <label for="numPhotos">Número de fotos a tomar</label>
-                <input id="numPhotos" type="number" value="1"/>
+                <input id="numPhotos" type="number" value="1"  min="1"/>
+
+                <button id="photo-btn" class="btn" onclick="initTakePhotos()">Capturar Imágenes</button>
             </div>
         </div>
 
 
-    
-        <form class="form-class-container">
+
+        <div class="form-class-container">
             <div class="class-1-container">
-                <input id="class-1" class="input-class" type="text" placeholder="Introduce el nombre de la clase"/>
-    
-                <input class="files-input" type="file" multiple placeholder="Selecciona los archivos">
-                <button class="upload-btn" onclick="uploadImgs()">Subir Fotos</button>
+                <input id="class-1" class="input-class" type="text" required placeholder="Introduce el nombre de la clase" />
+
+                <input id="files-input" type="file" multiple placeholder="Selecciona los archivos">
+                <button class="webcam-btn btn" onclick="getAccessWebcam()">Webcam</button>
+                <button id="upload-btn" class="btn">Subir Fotos</button>
             </div>
-        </form>
-    
+        </div>
+
         <div id="imgs-container" class="uploaded-imgs-container">
             <!-- TODO: Generar divs de clases para mostrar imgs aqui-->
         </div>
@@ -46,4 +49,5 @@
 
     <script src="script.js"></script>
 </body>
+
 </html>
