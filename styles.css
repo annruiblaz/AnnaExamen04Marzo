@@ -1,0 +1,67 @@
+.container {
+    padding: 50px 20px;
+
+    .video-container {
+        margin: 20px;
+        display: flex;
+        flex-direction: row;
+        gap: 20px;
+        width: 100%;
+        height: auto;
+        
+        video {
+            background-color: black;
+            width: 500px;
+            height: 375px;
+            max-width: 500px;
+            border-radius: 20px;
+        }
+    }
+
+    .class-1-container {
+        padding: 50px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        box-shadow: inset 0 0 30px #BBB;
+        background-color: #FFF;
+        border-radius: 20px;
+    }
+
+    #photo-btn,
+    .webcam-btn,
+    .class-btn {
+        max-width: 150px;
+        height: 40px;
+        max-height: fit-content;
+
+    }
+
+    .options-container {
+        padding: 20px;
+/*         position: absolute;
+        right: 20px;
+        top: 150px; */
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        max-width: 300px;
+        box-shadow: inset 0 0 30px #BBB;
+        background-color: #FFF;
+        border-radius: 20px;
+    }
+
+    #imgs-container {
+        display: flex;
+        gap: 20px;
+    }
+
+    .files-input {
+        max-width: 300px;
+    }
+
+    .upload-btn {
+        max-width: 150px;
+        height: 40px;
+    }
+}
