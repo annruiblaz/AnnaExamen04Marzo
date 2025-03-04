@@ -5,6 +5,7 @@ const INTERVAL_INPUT = document.getElementById('interval');
 const NUM_PHOTOS_INPUT = document.getElementById('numPhotos');
 const PHOTO_BTN = document.getElementById('photo-btn');
 const UPLOAD_BTN = document.getElementById('upload-btn');
+const CLASES_CONTAINER = document.getElementById('clases-container');
 
 //let isCapturing = false;
 let capturedImgs = [];
@@ -64,44 +65,44 @@ FILES_INPUT.addEventListener('change', (event) => {
     }
 });
 
+async function uploadPhotos(nameClass) {
+        //Enviamos los datos en un obj FormData (para + facilidad)
+        const formData = new FormData();
+
+        //Convierte cada img almacenada a un blob
+        for (let i = 0; i < capturedImgs.length; i++) {
+            //convertimos con blob en una img base64
+            const blob = await (await fetch(capturedImgs[i])).blob();
+    
+            let nameImg = `${nameClass}${i}.png`;
+            console.log(nameImg);
+    
+            //se agrega la img al formData con su nombre
+            formData.append('images', blob, nameImg);
+        }
+    
+        console.log('formData tras fori: ', formData);
+    
+        try {
+            //se envian con una petición POST las imgs al server
+            const response = await fetch('http://localhost:3000/imagenes', {
+                method: 'POST',
+                body: formData
+            });
+    
+            //convierte la respuesta a json y la printeamos
+            const result = await response.json();
+            console.log('Imágenes subidas: ', result);
+    
+        } catch(err) {
+            console.error('Error al subir las imágenes: ', err);
+        }
+}
+
 UPLOAD_BTN.addEventListener('click', async () => {
     let nameClass = document.getElementById('class-1').value;
-
-    //Enviamos los datos en un obj FormData (para + facilidad)
-    const formData = new FormData();
-
-    //Convierte cada img almacenada a un blob
-    for (let i = 0; i < capturedImgs.length; i++) {
-        //convertimos con blob en una img base64
-        const blob = await (await fetch(capturedImgs[i])).blob();
-
-        let nameImg = `${nameClass}${i}.png`;
-        console.log(nameImg);
-
-        //se agrega la img al formData con su nombre
-        formData.append('images', blob, nameImg);
-    }
-
-    console.log('formData tras fori: ', formData);
-
-    try {
-        //se envian con una petición POST las imgs al server
-        const response = await fetch('http://localhost:3000/imagenes', {
-            method: 'POST',
-            body: formData
-        });
-
-        //convierte la respuesta a json y la printeamos
-        const result = await response.json();
-        console.log('Imágenes subidas: ', result);
-
-    } catch(err) {
-        console.error('Error al subir las imágenes: ', err);
-    }
+    uploadPhotos(nameClass);
 });
-
-
-// TODO --> Optimizar esta guarrada (ROTO)
 
 function initTakePhotos() {
     let interval = INTERVAL_INPUT.valueAsNumber;
@@ -137,4 +138,46 @@ function takeImg() {
     img.src = dataURL;
     IMGS_CONTAINER.appendChild(img);
     console.log('Contador en takeImg', contador);
+}
+
+function createClass() {
+    let classContainer = document.createElement('div');
+    let inputClass = document.createElement('input');
+    let inputFiles = document.createElement('input');
+    let webcamBtn = document.createElement('button');
+    let uploadBtn = document.createElement('button');
+
+    classContainer.classList.add('class-container');
+
+    //config del input d la clase
+    inputClass.type = 'text';
+    inputClass.required = true;
+    inputClass.placeholder = 'Introduce el nombre de la clase';
+
+    //config del input para subir archivos
+    inputFiles.type = 'file';
+
+
+    //config del btn d la webcam
+    webcamBtn.classList.add('btn');
+    webcamBtn.textContent = 'Webcam';
+
+    //config del btn para subir imgs
+    uploadBtn.classList.add('btn');
+    uploadBtn.textContent = 'Subir Fotos';
+    uploadBtn.addEventListener('click', () => {
+        let nameClass = inputClass.value;
+        uploadPhotos(nameClass);
+    });
+
+    //se añaden los elementos al div contenedor
+    classContainer.appendChild(inputClass);
+    classContainer.appendChild(inputFiles);
+    classContainer.appendChild(webcamBtn);
+    classContainer.appendChild(uploadBtn);
+
+
+    //y el div al container d clases
+    CLASES_CONTAINER.appendChild(classContainer);
+
 }
