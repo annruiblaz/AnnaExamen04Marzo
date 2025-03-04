@@ -66,37 +66,37 @@ FILES_INPUT.addEventListener('change', (event) => {
 });
 
 async function uploadPhotos(nameClass) {
-        //Enviamos los datos en un obj FormData (para + facilidad)
-        const formData = new FormData();
+    //Enviamos los datos en un obj FormData (para + facilidad)
+    const formData = new FormData();
 
-        //Convierte cada img almacenada a un blob
-        for (let i = 0; i < capturedImgs.length; i++) {
-            //convertimos con blob en una img base64
-            const blob = await (await fetch(capturedImgs[i])).blob();
-    
-            let nameImg = `${nameClass}${i}.png`;
-            console.log(nameImg);
-    
-            //se agrega la img al formData con su nombre
-            formData.append('images', blob, nameImg);
-        }
-    
-        console.log('formData tras fori: ', formData);
-    
-        try {
-            //se envian con una petición POST las imgs al server
-            const response = await fetch('http://localhost:3000/imagenes', {
-                method: 'POST',
-                body: formData
-            });
-    
-            //convierte la respuesta a json y la printeamos
-            const result = await response.json();
-            console.log('Imágenes subidas: ', result);
-    
-        } catch(err) {
-            console.error('Error al subir las imágenes: ', err);
-        }
+    //Convierte cada img almacenada a un blob
+    for (let i = 0; i < capturedImgs.length; i++) {
+        //convertimos con blob en una img base64
+        const blob = await (await fetch(capturedImgs[i])).blob();
+
+        let nameImg = `${nameClass}${i}.png`;
+        console.log(nameImg);
+
+        //se agrega la img al formData con su nombre
+        formData.append('images', blob, nameImg);
+    }
+
+    //console.log('formData tras fori: ', formData);
+
+    try {
+        //se envian con una petición POST las imgs al server
+        const response = await fetch('http://localhost:3000/imagenes', {
+            method: 'POST',
+            body: formData
+        });
+
+        //convierte la respuesta a json y la printeamos
+        const result = await response.json();
+        console.log('Imágenes subidas: ', result);
+
+    } catch (err) {
+        console.error('Error al subir las imágenes: ', err);
+    }
 }
 
 UPLOAD_BTN.addEventListener('click', async () => {
@@ -104,25 +104,13 @@ UPLOAD_BTN.addEventListener('click', async () => {
     uploadPhotos(nameClass);
 });
 
-function initTakePhotos() {
+function takeImgs() {
     let interval = INTERVAL_INPUT.valueAsNumber;
     let numPhotos = NUM_PHOTOS_INPUT.valueAsNumber;
 
-    console.log(`Interval: ${interval}, NumPhotos: ${numPhotos}`);
 
-    function takeNextPhoto() {
-        //Para q espere bien todo el setTimeout necesitamos utilizarlo d manera recursivaa!!!
-        if (contador < numPhotos) {
-            contador += 1;
-            takeImg(); //tomamos y mostramos la captura
-            setTimeout(recursivePhoto, interval); //Volvemos a llamar a la funcion una vez pasa el intervalo d ms
-        }
-    }
-
-    takeNextPhoto();
-}
-
-function takeImg() {
+    //Captura la img y la muestra en el div d imgs
+    // TODO: añadirlo al div d class-container q correspondeeeeeeeeeee
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
 
@@ -137,7 +125,13 @@ function takeImg() {
     const img = document.createElement('img');
     img.src = dataURL;
     IMGS_CONTAINER.appendChild(img);
-    console.log('Contador en takeImg', contador);
+
+    contador++;
+
+    if (numPhotos > contador) {
+        setTimeout(takeImgs, interval);
+    }
+
 }
 
 function createClass() {
@@ -156,11 +150,17 @@ function createClass() {
 
     //config del input para subir archivos
     inputFiles.type = 'file';
-
+    inputFiles.placeholder = 'Selecciona los archivos'
+    inputFiles.multiple = true;
 
     //config del btn d la webcam
     webcamBtn.classList.add('btn');
     webcamBtn.textContent = 'Webcam';
+    webcamBtn.addEventListener('click', () => {
+        getAccessWebcam();
+    });
+
+    //webcamBtn.pa
 
     //config del btn para subir imgs
     uploadBtn.classList.add('btn');
@@ -180,4 +180,19 @@ function createClass() {
     //y el div al container d clases
     CLASES_CONTAINER.appendChild(classContainer);
 
+}
+
+//permite parar el stream
+function stopWebcam() {
+    //obtiene el stream
+    let stream = VIDEO_ELEMENT.srcObject;
+
+    //obtiene las pistas para ir parando 1 a 1
+    tracks = stream.getTracks();
+    tracks.forEach(function (track) {
+        track.stop();
+    });
+
+    //se elimina/para tmb el stream del elemento video
+    VIDEO_ELEMENT.srcObject = null;
 }
