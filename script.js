@@ -1,5 +1,5 @@
 const VIDEO_ELEMENT = document.getElementById('video');
-const IMGS_CONTAINER = document.getElementById('imgs-container');
+//const IMGS_CONTAINER = document.getElementById('imgs-container');
 const FILES_INPUT = document.getElementById('files-input');
 const INTERVAL_INPUT = document.getElementById('interval');
 const NUM_PHOTOS_INPUT = document.getElementById('numPhotos');
@@ -13,11 +13,18 @@ let uploadedImgs = [];
 let classNames = [];
 let numPhotos = 0;
 let contador = 0;
+let parent = null;
+let imgsContainer = null;
+
+//Crea los 2 divs inciciales d clases
+window.addEventListener('load', () => {
+    //cutre
+    createClass();
+    createClass();
+});
 
 async function getAccessWebcam() {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        /*         const stream = await navigator.mediaDevices.getUserMedia({video: true});
-                VIDEO_ELEMENT.srcObject = stream; */
         navigator.mediaDevices.getUserMedia({
                 audio: false,
                 video: {
@@ -27,7 +34,6 @@ async function getAccessWebcam() {
             })
             .then(function (stream) {
                 VIDEO_ELEMENT.srcObject = stream;
-                isCapturing = true;
             }).catch(function (error) {
                 console.error('Se ha producido un error al acceder a la webcam. :(');
             });
@@ -36,34 +42,40 @@ async function getAccessWebcam() {
     }
 }
 
-FILES_INPUT.addEventListener('change', (event) => {
-    //Obtenemos el nombre d la clase introducido x el user
-    let nameClass = document.getElementById('class-1').value;
+function uploadFilesToPage(event, parent) {
+        //Obtenemos el nombre d la clase introducido x el user
+        let nameClass = parent.value;
+        //let nameClass = document.getElementById('class-1').value;
 
-    //Obtenemos las imgs seleccionadas del user
-    const files = event.target.files;
+        console.log('UploadFilesToPage PArent:',parent );
+        console.log('UploadFilesToPage imgsContainer:',imgsContainer );
 
-    //Iteramos sobre cada 1 d los archivos
-    for (let file of files) {
-        //creamos el lector d archivos
-        const reader = new FileReader();
 
-        //Una vez el lector tiene el archivo cargado
-        reader.onload = (event) => {
-            //Almacenamos la img en el array
-            capturedImgs.push(event.target.result);
+        //Obtenemos las imgs seleccionadas del user
+        const files = event.target.files;
+    
+        //Iteramos sobre cada 1 d los archivos
+        for (let file of files) {
+            //creamos el lector d archivos
+            const reader = new FileReader();
+    
+            //Una vez el lector tiene el archivo cargado
+            reader.onload = (event) => {
+                //Almacenamos la img en el array
+                capturedImgs.push(event.target.result);
+    
+                //Creamos un elemento <img> para mostrarla
+                const img = document.createElement('img');
+                img.src = event.target.result;
 
-            //Creamos un elemento <img> para mostrarla
-            const img = document.createElement('img');
-            img.src = event.target.result;
-            //La añadimos en la clase q corresponde
-            IMGS_CONTAINER.appendChild(img);
-        };
+                //La añadimos en la clase q corresponde
+                imgsContainer.appendChild(img);
+            };
 
-        //Leemos el archivo como una url d datos en base64
-        reader.readAsDataURL(file);
-    }
-});
+            //Leemos el archivo como una url d datos en base64
+            reader.readAsDataURL(file);
+        }
+}
 
 async function uploadPhotos(nameClass) {
     //Enviamos los datos en un obj FormData (para + facilidad)
@@ -81,8 +93,6 @@ async function uploadPhotos(nameClass) {
         formData.append('images', blob, nameImg);
     }
 
-    //console.log('formData tras fori: ', formData);
-
     try {
         //se envian con una petición POST las imgs al server
         const response = await fetch('http://localhost:3000/imagenes', {
@@ -99,18 +109,11 @@ async function uploadPhotos(nameClass) {
     }
 }
 
-UPLOAD_BTN.addEventListener('click', async () => {
-    let nameClass = document.getElementById('class-1').value;
-    uploadPhotos(nameClass);
-});
-
 function takeImgs() {
     let interval = INTERVAL_INPUT.valueAsNumber;
     let numPhotos = NUM_PHOTOS_INPUT.valueAsNumber;
 
-
-    //Captura la img y la muestra en el div d imgs
-    // TODO: añadirlo al div d class-container q correspondeeeeeeeeeee
+    //Captura la img
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
 
@@ -124,14 +127,25 @@ function takeImgs() {
 
     const img = document.createElement('img');
     img.src = dataURL;
-    IMGS_CONTAINER.appendChild(img);
-
+    //añade la img al class-container d la clase q le corresponde
+    imgsContainer.appendChild(img);
     contador++;
 
     if (numPhotos > contador) {
         setTimeout(takeImgs, interval);
+    } else {
+        //setTimeout(stopWebcam(), 2000);
+        stopWebcam();
     }
 
+}
+
+function getClassName(parent) {
+    console.log(parent);
+    let inputClass = parent.childNodes[0];
+    console.log(inputClass)
+
+    return inputClass.value;
 }
 
 function createClass() {
@@ -140,31 +154,49 @@ function createClass() {
     let inputFiles = document.createElement('input');
     let webcamBtn = document.createElement('button');
     let uploadBtn = document.createElement('button');
+    let imgContainer = document.createElement('div');
 
+    //config div contenedor
     classContainer.classList.add('class-container');
 
     //config del input d la clase
     inputClass.type = 'text';
     inputClass.required = true;
     inputClass.placeholder = 'Introduce el nombre de la clase';
+    inputClass.classList.add('input-class');
 
     //config del input para subir archivos
     inputFiles.type = 'file';
-    inputFiles.placeholder = 'Selecciona los archivos'
     inputFiles.multiple = true;
+    inputFiles.classList.add('files-input');
+    inputFiles.addEventListener('change', (event) => {
+        parent = inputFiles.parentElement;
+        imgsContainer = parent.childNodes[3];
+        uploadFilesToPage(event, parent);
+    });
 
     //config del btn d la webcam
     webcamBtn.classList.add('btn');
     webcamBtn.textContent = 'Webcam';
+    webcamBtn.classList.add('webcam-btn');
     webcamBtn.addEventListener('click', () => {
         getAccessWebcam();
+
+        //**Pruebas random
+        console.log(webcamBtn);
+        let name = getClassName(webcamBtn.parentElement);
+        console.log(name);
+        parent = webcamBtn.parentElement;
+        imgsContainer = webcamBtn.previousSibling;
     });
 
-    //webcamBtn.pa
+    //config div contenedor d las imgs q se suben / capturan
+    imgContainer.classList.add('img-container');
 
     //config del btn para subir imgs
     uploadBtn.classList.add('btn');
     uploadBtn.textContent = 'Subir Fotos';
+    uploadBtn.classList.add('upload-btn');
     uploadBtn.addEventListener('click', () => {
         let nameClass = inputClass.value;
         uploadPhotos(nameClass);
@@ -174,6 +206,7 @@ function createClass() {
     classContainer.appendChild(inputClass);
     classContainer.appendChild(inputFiles);
     classContainer.appendChild(webcamBtn);
+    classContainer.appendChild(imgContainer);
     classContainer.appendChild(uploadBtn);
 
 
@@ -186,6 +219,8 @@ function createClass() {
 function stopWebcam() {
     //obtiene el stream
     let stream = VIDEO_ELEMENT.srcObject;
+    
+    if(stream === null) return;
 
     //obtiene las pistas para ir parando 1 a 1
     tracks = stream.getTracks();

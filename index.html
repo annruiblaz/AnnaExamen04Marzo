@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Examen 4 de Marzo</title>
+    <title>Examen 5 de Marzo</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -15,6 +15,8 @@
             Una vez subidas o tomadas, las verás más abajo y se almacenarán en el servidor.
         </h4> -->
 
+        <div id="add-class" class="btn" onclick="createClass()"><span>+</span> Añadir clase</div>
+
         <div class="video-container">
             <video id="video" autoplay></video>
             <div class="options-container">
@@ -24,29 +26,27 @@
                 <input id="interval" type="number" value="1000" step="500" min="500"/>
 
                 <label for="numPhotos">Número de fotos a tomar</label>
-                <input id="numPhotos" type="number" value="1"  min="1"/>
+                <input id="numPhotos" type="number" step="1" value="1"  min="1"/>
 
                 <button id="photo-btn" class="btn" onclick="takeImgs()">Capturar Imágenes</button>
-                <button onclick="stopWebcam()">Stop stream</button>
             </div>
         </div>
 
 
         <div id="clases-container">
-            <div class="class-container">
+<!--             <div class="class-container">
                 <input id="class-1" class="input-class" type="text" required placeholder="Introduce el nombre de la clase" />
 
-                <input id="files-input" type="file" multiple placeholder="Selecciona los archivos">
+                <input id="files-input" class="files-input" type="file" multiple placeholder="Selecciona los archivos">
                 <button class="webcam-btn btn" onclick="getAccessWebcam()">Webcam</button>
-                <button id="upload-btn" class="btn">Subir Fotos</button>
-            </div>
+                <button id="upload-btn" class="upload-btn btn">Subir Fotos</button>
+            </div> -->
         </div>
 
         <div id="imgs-container" class="uploaded-imgs-container">
             <!-- TODO: Generar divs de clases para mostrar imgs aqui-->
         </div>
 
-        <button id="add-class" class="btn" onclick="createClass()">Añadir clase</button>
     </div>
 
     <script src="script.js"></script>
