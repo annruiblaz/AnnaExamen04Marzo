@@ -25,20 +25,10 @@ window.addEventListener('load', () => {
 
 function changeValue(value, inputElement) {
     let input = document.getElementById(inputElement);
-    console.log('PARENT: ', input);
-    console.log('PARENT.value: ', input.value);
-
-
     let newValue = parseInt(input.value) + value;
 
-    console.log('New value:', newValue);
-
-    console.log('min:', input.min);
-
-    console.log('max: ', input.max);
     if(newValue >= input.min && newValue <= input.max) {
         input.value = parseInt(newValue);
-        console.log('Dentro d if:', input.value);
     }
 }
 
@@ -68,7 +58,6 @@ function uploadFilesToPage(event, parent) {
 
         console.log('UploadFilesToPage PArent:',parent );
         console.log('UploadFilesToPage imgsContainer:',imgsContainer );
-
 
         //Obtenemos las imgs seleccionadas del user
         const files = event.target.files;
@@ -138,14 +127,10 @@ async function uploadPhotos(nameClass) {
 }
 
 function takeImgs() {
-
-    if (!parent || !parent.childNodes[0].value.trim()) {
-        alert('Debes introducir el nombre de la clase antes de tomar o subir fotos.');
-        return;
-    }
-
     let interval = INTERVAL_INPUT.valueAsNumber;
     let numPhotos = NUM_PHOTOS_INPUT.valueAsNumber;
+
+    console.log(`Takeimgs: interval: ${interval}, numphotos ${numPhotos}`)
 
     //Captura la img
     const canvas = document.createElement('canvas');
@@ -160,6 +145,7 @@ function takeImgs() {
     capturedImgs.push(dataURL); //añadimos a array d imgs capturadas 
 
     const img = document.createElement('img');
+
     img.src = dataURL;
     //añade la img al class-container d la clase q le corresponde
     imgsContainer.appendChild(img);
@@ -210,6 +196,7 @@ function createClass() {
         parent = inputFiles.parentElement;
         //del parent obtenemos el div dnd van las imgs (un poco guarrete pero, al generarse siempre está en esa posición del array)
         imgsContainer = parent.childNodes[3];
+        console.log('Asignado en inputFiles imgsContainer: ', imgsContainer);
         //muestra las imgs en la web
         uploadFilesToPage(event, parent);
     });
@@ -220,13 +207,8 @@ function createClass() {
     webcamBtn.classList.add('webcam-btn');
     webcamBtn.addEventListener('click', () => {
         getAccessWebcam();
-
-        //**Pruebas random
-        console.log(webcamBtn);
-        let name = getClassName(webcamBtn.parentElement);
-        console.log(name);
         parent = webcamBtn.parentElement;
-        imgsContainer = webcamBtn.previousSibling;
+        imgsContainer = parent.childNodes[3];
     });
 
     //config div contenedor d las imgs q se suben / capturan
