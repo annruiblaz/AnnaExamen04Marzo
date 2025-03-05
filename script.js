@@ -23,6 +23,25 @@ window.addEventListener('load', () => {
     createClass();
 });
 
+function changeValue(value, inputElement) {
+    let input = document.getElementById(inputElement);
+    console.log('PARENT: ', input);
+    console.log('PARENT.value: ', input.value);
+
+
+    let newValue = parseInt(input.value) + value;
+
+    console.log('New value:', newValue);
+
+    console.log('min:', input.min);
+
+    console.log('max: ', input.max);
+    if(newValue >= input.min && newValue <= input.max) {
+        input.value = parseInt(newValue);
+        console.log('Dentro d if:', input.value);
+    }
+}
+
 async function getAccessWebcam() {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         navigator.mediaDevices.getUserMedia({
@@ -78,24 +97,33 @@ function uploadFilesToPage(event, parent) {
 }
 
 async function uploadPhotos(nameClass) {
+
+    if (!parent || !parent.childNodes[0].value.trim()) {
+        alert('Debes introducir el nombre de la clase antes de tomar o subir fotos.');
+        return;
+    }
+
     //Enviamos los datos en un obj FormData (para + facilidad)
     const formData = new FormData();
+
+    console.log('capturedImgs:', capturedImgs);
 
     //Convierte cada img almacenada a un blob
     for (let i = 0; i < capturedImgs.length; i++) {
         //convertimos con blob en una img base64
         const blob = await (await fetch(capturedImgs[i])).blob();
 
-        let nameImg = `${nameClass}${i}.png`;
+        let nameImg = `${nameClass}_${i}.png`;
         console.log(nameImg);
 
         //se agrega la img al formData con su nombre
         formData.append('images', blob, nameImg);
+        console.log('nameClass', nameClass);
     }
 
     try {
         //se envian con una petición POST las imgs al server
-        const response = await fetch('http://localhost:3000/imagenes', {
+        const response = await fetch(`http://localhost:3000/imagenes?class=${nameClass}`, {
             method: 'POST',
             body: formData
         });
@@ -110,6 +138,12 @@ async function uploadPhotos(nameClass) {
 }
 
 function takeImgs() {
+
+    if (!parent || !parent.childNodes[0].value.trim()) {
+        alert('Debes introducir el nombre de la clase antes de tomar o subir fotos.');
+        return;
+    }
+
     let interval = INTERVAL_INPUT.valueAsNumber;
     let numPhotos = NUM_PHOTOS_INPUT.valueAsNumber;
 
@@ -170,8 +204,13 @@ function createClass() {
     inputFiles.multiple = true;
     inputFiles.classList.add('files-input');
     inputFiles.addEventListener('change', (event) => {
+        //para la animación del contenedorr
+
+        //obtiene el parentElement
         parent = inputFiles.parentElement;
+        //del parent obtenemos el div dnd van las imgs (un poco guarrete pero, al generarse siempre está en esa posición del array)
         imgsContainer = parent.childNodes[3];
+        //muestra las imgs en la web
         uploadFilesToPage(event, parent);
     });
 
@@ -191,7 +230,7 @@ function createClass() {
     });
 
     //config div contenedor d las imgs q se suben / capturan
-    imgContainer.classList.add('img-container');
+    imgContainer.classList.add('imgs-container');
 
     //config del btn para subir imgs
     uploadBtn.classList.add('btn');
@@ -231,3 +270,4 @@ function stopWebcam() {
     //se elimina/para tmb el stream del elemento video
     VIDEO_ELEMENT.srcObject = null;
 }
+

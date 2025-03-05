@@ -23,10 +23,20 @@
 
 
                 <label for="interval">Selecciona el intervalo de ms entre la toma de imagenes</label>
-                <input id="interval" type="number" value="1000" step="500" min="500"/>
+
+                <div class="input-container">
+                    <button class="btn btn-inputs" onclick="changeValue(-500, 'interval')">-</button>
+                    <input id="interval" type="number" value="1000" step="500" min="500" max="10000"/>
+                    <button class="btn btn-inputs" onclick="changeValue(500, 'interval')">+</button>
+                </div>
 
                 <label for="numPhotos">Número de fotos a tomar</label>
-                <input id="numPhotos" type="number" step="1" value="1"  min="1"/>
+
+                <div class="input-container">
+                    <button class="btn btn-inputs" onclick="changeValue(-1, 'numPhotos')">-</button>
+                    <input id="numPhotos" type="number" step="1" value="1" min="1" max="100" readonly="true"/>
+                    <button class="btn btn-inputs" onclick="changeValue(1, 'numPhotos')">+</button>
+                </div>
 
                 <button id="photo-btn" class="btn" onclick="takeImgs()">Capturar Imágenes</button>
             </div>
@@ -41,10 +51,6 @@
                 <button class="webcam-btn btn" onclick="getAccessWebcam()">Webcam</button>
                 <button id="upload-btn" class="upload-btn btn">Subir Fotos</button>
             </div> -->
-        </div>
-
-        <div id="imgs-container" class="uploaded-imgs-container">
-            <!-- TODO: Generar divs de clases para mostrar imgs aqui-->
         </div>
 
     </div>
