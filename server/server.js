@@ -8,10 +8,8 @@ const { dir } = require('console');
 const app = express();
 app.use(cors());
 
-app.use(express.static('/server/imagenes'));
-
-//app.use('/imagenes', express.static(path.join(__dirname,'imagenes')));
 const base_URL = path.join(__dirname,'imagenes');
+app.use('/server/imagenes', express.static(base_URL));
 console.log('Ruta dirName + imgs', base_URL);
 
 
@@ -61,80 +59,24 @@ app.get('/ver-imagenes', async (req, res) => {
             <h2>Resultados de la carpeta imágenes:</h2>
     `;
 
+    //Leemos el contenido d la subcarpeta
     for(const subdir of subdirs) {
         const dirUrl = path.join(base_URL, subdir);
         const imgs = await fs.readdir(dirUrl);
         console.log(`Imágenes en la subcarpeta ${subdir}: `, imgs);
-        html += `<h4>Directorio: ${subdirs}</h4>`;
+        html += `<h4>Directorio: ${subdir}</h4>`;
+        console.log('baseURl: ', base_URL);
 
+        //iteramos sobre cada img y la pintamos en el html
         for(const img of imgs) {
-            html += `<img src="${dirUrl}/${img}" alt="${img}" /> <br/>`;
+            html += `<img src="/server/imagenes/${subdir}/${img}" alt="${img}" /> <br/>`;
         }
     }
 
-
+    //cerramos y envia el html como respuesta
     html += `</body></html>`;
     res.send(html);
-    //Leemos el contenido d la carpeta
-/*     fs.readdir(base_URL, (err, subdirs) => {
-        if(err) {
-            return res.status(500).send('Error al leer la carpeta de imágenes.');
-        }
-
-        console.log('Subdirectorios en la carpeta imágenes: ', subdirs);
-
-        let html = `
-        <!DOCTYPE html>
-        <html>
-            <head>
-                <meta charset="UTF-8">
-                <title>Resultados de la carpeta imágenes</title>
-                <style>
-                    img { margin: 10px; max-width: 200px; max-height: 200px; }
-                </style>
-            </head>
-            <body>
-                <h2>Resultados de la carpeta imágenes:</h2>
-        `;
-
-        subdirs.forEach( (subdir) => {
-            html += `<h4>${subdir}</h4>`;
-            let rutaSubdir = path.join(base_URL, subdir);
-            console.log('RutaSubdir', rutaSubdir);
-
-            imgs = fs.readdir(rutaSubdir, (err, files) => {
-                if(err) {
-                    console.error('Error al leer la subcarpeta de ', subdir);
-                    return;
-                }
-        
-                console.log(`Imágenes en la subcarpeta ${subdir}: `, files);
-                files.forEach( (fileImg) => {
-                    console.log('File info', fileImg)
-                    html += `<img src="/server/imagenes/${subdir}/${fileImg}" alt="${fileImg}" /> <br/>`;
-                });
-            });
-        });
-
-        html += '</body></html>';
-
-        //Enviamos el html como respuesta
-        res.send(html);
-    }); */
-
-   /*  try {
-        const dir = await fs.opendir(base_URL);
-        for await (const dirElement of dir) {
-            console.log('DirElement: ', dirElement.name );
-        }
-    } catch(err) {
-        console.error('Error al realizar el opendir: ', err);
-    } */
-
-
-/*         res.json({images: fs.opendir(base_URL)});
- */    });
-
+});
 
 //inicia el server
 app.listen(3000, () => console.log('Servidor activo en http://localhost:3000'));
